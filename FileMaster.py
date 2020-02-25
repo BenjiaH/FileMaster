@@ -1,5 +1,6 @@
 import os
 import shutil
+import sys
 import time
 
 
@@ -44,9 +45,9 @@ def sort_by_extension(file_list):
     count = 0
     for i in file_list:
         cur_file_extension = os.path.splitext(i)[-1]
-        if i == (os.path.basename(__file__)).replace("py", "exe"):
+        if i == (os.path.basename(sys.argv[0])).replace("py", "exe"):
             pass
-        elif i == os.path.basename(__file__):
+        elif i == os.path.basename(sys.argv[0]):
             pass
         elif cur_file_extension == "":
             pass
@@ -71,9 +72,9 @@ def sort_by_filename(file_list):
     for i in file_list:
         cur_file_extension = os.path.splitext(i)[-1]
         cur_file_without_extension = os.path.splitext(i)[0]
-        if i == (os.path.basename(__file__)).replace("py", "exe"):
+        if i == (os.path.basename(sys.argv[0])).replace("py", "exe"):
             pass
-        elif i == os.path.basename(__file__):
+        elif i == os.path.basename(sys.argv[0]):
             pass
         # 文件夹
         elif cur_file_extension == "":
