@@ -9,6 +9,8 @@ def get_file_list(path):
 
 def file_process(file_list):
     global file_num, folder_num
+    file_num = 0
+    folder_num = 0
     if choice == "1":
         file_num = sort_by_extension(file_list)
     elif choice == "2":
@@ -30,7 +32,7 @@ def del_old_file(file):
 
 
 def del_old_floder(folder):
-    os.removedirs(folder)
+    shutil.rmtree(folder)
 
 
 def init():
@@ -77,11 +79,17 @@ def sort_by_filename(file_list):
         elif cur_file_extension == "":
             pass
         else:
-            os.mkdir(cur_file_without_extension)
-            copy_file(i, cur_file_without_extension + "\\" + i)
-            del_old_file(i)
-            count += 1
-            print("已整理", i)
+            if os.path.exists(cur_file_without_extension):
+                copy_file(i, cur_file_without_extension + "\\" + i)
+                del_old_file(i)
+                count += 1
+                print("已整理", i)
+            else:
+                os.mkdir(cur_file_without_extension)
+                copy_file(i, cur_file_without_extension + "\\" + i)
+                del_old_file(i)
+                count += 1
+                print("已整理", i)
     return count
 
 
@@ -96,12 +104,12 @@ def dismiss_folder(file_list):
             for j in dismissed_folder:
                 copy_file(i + "\\" + j, j)
                 count += 1
-            del_old_floder(dismiss_folder())
+            del_old_floder(i)
     return count
 
 
 def exit_program():
-    if file_num == 0:
+    if file_num == 0 | folder_num == 0:
         input("\n\n未发现可以整理的文件。\n按任意键退出。")
     else:
         input("\n\n所有文件（夹）整理（解散）完成，耗时{:.2f}秒。\n按任意键退出。".format(end - start))
