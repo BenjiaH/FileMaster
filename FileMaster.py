@@ -8,11 +8,13 @@ def get_file_list(path):
 
 
 def file_process(file_list):
-    global file_num
+    global file_num, folder_num
     if choice == "1":
         file_num = sort_by_extension(file_list)
     elif choice == "2":
         file_num = sort_by_filename(file_list)
+    elif choice == "3":
+        folder_num = dismiss_folder(file_list)
 
 
 def copy_file(source, target):
@@ -27,55 +29,74 @@ def del_old_file(file):
     os.remove(file)
 
 
+def del_old_floder(folder):
+    os.removedirs(folder)
+
+
 def init():
     global choice
-    choice = input("请选择整理方式:\n1.按文件类型\t2.按文件名\n")
+    choice = input("请选择整理方式:\n1.按文件类型\t2.按文件名\t3.文件夹解散\n")
 
 
 def sort_by_extension(file_list):
     count = 0
-    for i in range(len(file_list)):
-        cur_file_extension = os.path.splitext(file_list[i])[-1]
-        if file_list[i] == (os.path.basename(__file__)).replace("py", "exe"):
+    for i in file_list:
+        cur_file_extension = os.path.splitext(i)[-1]
+        if i == (os.path.basename(__file__)).replace("py", "exe"):
             pass
-        elif file_list[i] == os.path.basename(__file__):
+        elif i == os.path.basename(__file__):
             pass
         elif cur_file_extension == "":
             pass
         else:
             cur_file_extension = cur_file_extension.replace(".", "")
             if os.path.exists(cur_file_extension + "文件"):
-                copy_file(file_list[i], cur_file_extension + "文件\\" + file_list[i])
-                del_old_file(file_list[i])
+                copy_file(i, cur_file_extension + "文件\\" + i)
+                del_old_file(i)
                 count += 1
-                print("已整理", file_list[i])
+                print("已整理", i)
             else:
                 os.mkdir(cur_file_extension + "文件")
-                copy_file(file_list[i], cur_file_extension + "文件\\" + file_list[i])
-                del_old_file(file_list[i])
+                copy_file(i, cur_file_extension + "文件\\" + i)
+                del_old_file(i)
                 count += 1
-                print("已整理", file_list[i])
+                print("已整理", i)
     return count
 
 
 def sort_by_filename(file_list):
     count = 0
-    for i in range(len(file_list)):
-        cur_file_extension = os.path.splitext(file_list[i])[-1]
-        cur_file_without_extension = os.path.splitext(file_list[i])[0]
-        if file_list[i] == (os.path.basename(__file__)).replace("py", "exe"):
+    for i in file_list:
+        cur_file_extension = os.path.splitext(i)[-1]
+        cur_file_without_extension = os.path.splitext(i)[0]
+        if i == (os.path.basename(__file__)).replace("py", "exe"):
             pass
-        elif file_list[i] == os.path.basename(__file__):
+        elif i == os.path.basename(__file__):
             pass
         # 文件夹
         elif cur_file_extension == "":
             pass
         else:
             os.mkdir(cur_file_without_extension)
-            copy_file(file_list[i], cur_file_without_extension + "\\" + file_list[i])
-            del_old_file(file_list[i])
+            copy_file(i, cur_file_without_extension + "\\" + i)
+            del_old_file(i)
             count += 1
-            print("已整理", file_list[i])
+            print("已整理", i)
+    return count
+
+
+def dismiss_folder(file_list):
+    count = 0
+    for i in file_list:
+        # for i in range(1):
+        cur_file_extension = os.path.splitext(i)[-1]
+        # 文件夹
+        if cur_file_extension == "":
+            dismissed_folder = get_file_list(i)
+            for j in dismissed_folder:
+                copy_file(i + "\\" + j, j)
+                count += 1
+            del_old_floder(dismiss_folder())
     return count
 
 
@@ -83,7 +104,7 @@ def exit_program():
     if file_num == 0:
         input("\n\n未发现可以整理的文件。\n按任意键退出。")
     else:
-        input("\n\n所有文件整理完成，耗时{:.2f}秒。\n按任意键退出。".format(end - start))
+        input("\n\n所有文件（夹）整理（解散）完成，耗时{:.2f}秒。\n按任意键退出。".format(end - start))
 
 
 def main():
