@@ -58,10 +58,11 @@ def sort_by_extension(file_list):
     return count
 
 
-def sort_by_extension(file_list):
+def sort_by_filename(file_list):
     count = 0
     for i in range(len(file_list)):
         cur_file_extension = os.path.splitext(file_list[i])[-1]
+        cur_file_without_extension = os.path.splitext(file_list[i])[0]
         if file_list[i] == (os.path.basename(__file__)).replace("py", "exe"):
             pass
         elif file_list[i] == os.path.basename(__file__):
@@ -70,18 +71,11 @@ def sort_by_extension(file_list):
         elif cur_file_extension == "":
             pass
         else:
-            cur_file_extension = cur_file_extension.replace(".", "")
-            if os.path.exists(cur_file_extension + "文件"):
-                copy_file(file_list[i], cur_file_extension + "文件\\" + file_list[i])
-                del_old_file(file_list[i])
-                count += 1
-                print("已整理", file_list[i])
-            else:
-                os.mkdir(cur_file_extension + "文件")
-                copy_file(file_list[i], cur_file_extension + "文件\\" + file_list[i])
-                del_old_file(file_list[i])
-                count += 1
-                print("已整理", file_list[i])
+            os.mkdir(cur_file_without_extension)
+            copy_file(file_list[i], cur_file_without_extension + "\\" + file_list[i])
+            del_old_file(file_list[i])
+            count += 1
+            print("已整理", file_list[i])
     return count
 
 
