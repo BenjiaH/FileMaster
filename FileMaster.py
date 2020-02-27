@@ -38,7 +38,11 @@ def del_old_floder(folder):
 
 def init():
     global choice
-    choice = input("请选择整理方式:\n1.按文件类型\t2.按文件名\t3.文件夹解散\n")
+    print("***************FileMaster***************")
+    print("**https://github.com/BenjiaH/FileMaster**\n")
+
+    print("当前工作目录：{}".format(os.getcwd()))
+    choice = input("请选择:\n1.按文件类型整理\t2.按文件名整理\t3.文件夹解散")
 
 
 def sort_by_extension(file_list):
