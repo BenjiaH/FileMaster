@@ -52,7 +52,7 @@ def sort_by_extension(file_list):
         elif cur_file_extension == "":
             pass
         else:
-            cur_file_extension = cur_file_extension.replace(".", "")
+            cur_file_extension = (cur_file_extension.replace(".", "")).upper()
             if os.path.exists(cur_file_extension + "文件"):
                 copy_file(i, cur_file_extension + "文件\\" + i)
                 del_old_file(i)
