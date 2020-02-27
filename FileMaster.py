@@ -62,8 +62,6 @@ def init():
             flag_0 = 0
 
 
-
-
 def sort_by_extension(file_list):
     count = 0
     for i in file_list:
