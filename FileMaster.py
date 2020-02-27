@@ -37,21 +37,38 @@ def del_old_floder(folder):
 
 
 def init():
-    global choice
+    global choice, cur_path
     print("***************FileMaster***************")
     print("**https://github.com/BenjiaH/FileMaster**\n")
+    cur_path = os.getcwd()
+    os.chdir(cur_path)
+    flag_0 = 1
+    while flag_0:
+        print("当前工作目录：{}".format(cur_path))
+        choice = input("请选择:\n1.按文件类型整理\t2.按文件名整理\t\t3.文件夹解散\n4.更改当前目录\n")
+        if choice == "4":
+            cur_path = input("输入新的工作目录：\n")
+            flag_1 = 1
+            while flag_1:
+                try:
+                    os.chdir(cur_path)
+                    flag_1 = 0
+                    print()
+                except Exception as e:
+                    print(e)
+                    cur_path = input("输入有误请重新输入：\n")
+                continue
+        else:
+            flag_0 = 0
 
-    print("当前工作目录：{}".format(os.getcwd()))
-    choice = input("请选择:\n1.按文件类型整理\t2.按文件名整理\t3.文件夹解散")
+
 
 
 def sort_by_extension(file_list):
     count = 0
     for i in file_list:
         cur_file_extension = os.path.splitext(i)[-1]
-        if i == (os.path.basename(sys.argv[0])).replace("py", "exe"):
-            pass
-        elif i == os.path.basename(sys.argv[0]):
+        if i == (os.path.basename(sys.argv[0])):
             pass
         elif cur_file_extension == "":
             pass
@@ -76,9 +93,7 @@ def sort_by_filename(file_list):
     for i in file_list:
         cur_file_extension = os.path.splitext(i)[-1]
         cur_file_without_extension = os.path.splitext(i)[0]
-        if i == (os.path.basename(sys.argv[0])).replace("py", "exe"):
-            pass
-        elif i == os.path.basename(sys.argv[0]):
+        if i == (os.path.basename(sys.argv[0])):
             pass
         # 文件夹
         elif cur_file_extension == "":
@@ -117,16 +132,14 @@ def exit_program():
     if file_num == 0 | folder_num == 0:
         input("\n\n未发现可以整理的文件。\n按任意键退出。")
     else:
-        input("\n\n所有文件（夹）整理（解散）完成，耗时{:.2f}秒。\n按任意键退出。".format(end - start))
+        input("\n\n所有文件（夹）整理（解散）完成，耗时{:.2f}秒。请刷新。\n按任意键退出。".format(end - start))
 
 
 def main():
     global end, start
     init()
     start = time.time()
-    cur_path = os.getcwd()
-    os.chdir(cur_path)
-    cur_file_list = get_file_list(os.getcwd())
+    cur_file_list = get_file_list(cur_path)
     file_process(cur_file_list)
     end = time.time()
     exit_program()
