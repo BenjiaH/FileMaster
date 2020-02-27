@@ -1,4 +1,5 @@
 icon/
+test_folder/
 *.__pycache__
 *.build
 *.testfolder
