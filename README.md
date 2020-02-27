@@ -11,6 +11,7 @@
 - [X] 切换工作目录
 - [ ] Word文档批量转换为PDF文件
 - [ ] Power Point文档批量转换为PDF文件
+- [ ] 批量修改文件名，对重复的文件名字段进行修改
 
 ## License
 [MIT License](https://github.com/BenjiaH/FileMaster/blob/master/LICENSE)
