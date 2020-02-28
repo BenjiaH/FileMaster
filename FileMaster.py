@@ -1,11 +1,15 @@
+# -*- coding: utf-8 -*-
+
 import os
 from shutil import copyfile, rmtree
 import sys
 from time import time
+from comtypes.client import CreateObject
 
 
-def get_file_list(path):
-    return os.listdir(path)
+def process_detection(process_name):
+    process = len(os.popen('tasklist | findstr ' + process_name).readlines())
+    return process
 
 
 def select_file_folder(select_type, selcet_path):
@@ -26,15 +30,19 @@ def select_file_folder(select_type, selcet_path):
 
 
 def file_process(path):
-    global file_num, folder_num
-    file_num = 0
-    folder_num = 0
+    global process_num
+    process_num = 0
     if choice == "1":
-        file_num = sort_by_extension(path)
+        process_num = sort_by_extension(path)
     elif choice == "2":
-        file_num = sort_by_filename(path)
+        process_num = sort_by_filename(path)
     elif choice == "3":
-        folder_num = dismiss_folder(path)
+        process_num = dismiss_folder(path)
+    elif choice == "4":
+        process_num = wordppt2pdf(choice, path)
+    elif choice == "5":
+        process_num = wordppt2pdf(choice, path)
+    return process_num
 
 
 def copy_file(source, target):
@@ -63,8 +71,12 @@ def init():
     flag_0 = 1
     while flag_0:
         print("当前工作目录：{}".format(cur_path))
-        choice = input("请选择:\n1.按文件类型整理\t2.按文件名整理\t\t3.文件夹解散\n4.更改当前目录\n")
-        if choice == "4":
+        print("请选择:")
+        print("1.按文件类型整理\t2.按文件名整理\t\t3.文件夹解散")
+        print("4.Word=>PDF\t\t\t5.PPT=>PDF")
+        print("0.更改当前目录\n")
+        choice = input()
+        if choice == "0":
             cur_path = input("输入新的工作目录：\n")
             flag_1 = 1
             while flag_1:
@@ -122,20 +134,78 @@ def dismiss_folder(path):
     return count
 
 
-def exit_program(cost_time):
-    if file_num == 0 | folder_num == 0:
-        input("\n\n未发现可以整理的文件。\n按任意键退出。")
+# 速度最快。可能会导致office进程无法完全关闭
+# 4.Word=>PDF 5.PPT=>PDF
+def wordppt2pdf(covert_choice, path):
+    global start
+    count = 0
+    file_list = select_file_folder("file", path)
+    if covert_choice == "4":
+        wd_list = [f for f in file_list if f.endswith((".doc", ".docx"))]
+        if len(wd_list) > 0:
+            while process_detection("WINWORD.EXE"):
+                input("检测到Word已经打开，请保存当前文件并关闭程序。按任意键继续。")
+                os.system('TASKKILL /F /IM "WINWORD.EXE"')
+            input("按任意键开始转换{}".format(wd_list))
+            start = time()
+            # 是否需要两条指令？
+            word = CreateObject("Word.Application")
+            word.Visible = 0
+            for i in wd_list:
+                print("正在转换{}为PDF文件".format(i))
+                new_pdf = word.Documents.Open(cur_path + "\\" + i)
+                new_pdf.SaveAs(cur_path + "\\" + os.path.splitext(i)[0] + ".pdf", FileFormat=17)
+                new_pdf.Close()
+                count += 1
+                print("已转换{}为PDF文件".format(i))
+            os.system('TASKKILL /F /IM "WINWORD.EXE"')
+            return count
+        else:
+            return count
+    elif covert_choice == "5":
+        ppt_list = [f for f in file_list if f.endswith((".ppt", ".pptx"))]
+        if len(ppt_list) > 0:
+            while process_detection("POWERPNT.EXE"):
+                input("检测到PowerPoint已经打开，请保存当前文件并关闭程序。按任意键继续。")
+                os.system('TASKKILL /F /IM "POWERPNT.EXE"')
+            print("可能耗时较长，请耐心等待。建议先关闭PowerPoint的所有加载项。若出现卡死，请手动结束PowerPoint。")
+            input("按任意键开始转换{}".format(ppt_list))
+            start = time()
+            # 是否需要两条指令？
+            ppt = CreateObject("Powerpoint.Application")
+            ppt.Visible = 1
+            for i in ppt_list:
+                print("正在转换{}为PDF文件".format(i))
+                new_pdf = ppt.Presentations.Open(cur_path + "\\" + i)
+                new_pdf.SaveAs(cur_path + "\\" + os.path.splitext(i)[0] + ".pdf", FileFormat=32)
+                new_pdf.Close()
+                count += 1
+                print("已转换{}为PDF文件".format(i))
+            os.system('TASKKILL /F /IM "POWERPNT.EXE"')
+            return count
+        else:
+            return count
+
+
+def exit_program(choice, process_num, cost_time):
+    if process_num == 0:
+        input("\n\n未发现可以处理的文件。\n按任意键退出。")
     else:
-        input("\n\n所有文件（夹）整理（解散）完成，耗时{:.2f}秒。请刷新。\n按任意键退出。".format(cost_time))
+        if choice == "1" or choice == "2":
+            input("\n\n所有文件整理完成，耗时{:.2f}秒。请刷新。\n按任意键退出。".format(cost_time))
+        elif choice == "3":
+            input("\n\n所有文件夹解散完成，耗时{:.2f}秒。请刷新。\n按任意键退出。".format(cost_time))
+        elif choice == "4" or choice == "5":
+            input("\n\n所有文件转换为PDF完成，耗时{:.2f}秒。请刷新。\n按任意键退出。".format(cost_time))
 
 
 def main():
     global end, start
     init()
     start = time()
-    file_process(cur_path)
+    process_num = file_process(cur_path)
     end = time()
-    exit_program(end - start)
+    exit_program(choice, process_num, end - start)
 
 
 if __name__ == '__main__':
