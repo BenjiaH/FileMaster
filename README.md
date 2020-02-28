@@ -1,4 +1,5 @@
-# FileMaster
+<h1 align="center">FileMaster</h1>
+<h3 align="center">BenjiaH</h3>
 
 ## Features
 - 将当前目录文件按文件类型分类；
