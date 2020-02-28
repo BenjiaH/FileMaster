@@ -1,28 +1,45 @@
 import os
-import shutil
+from shutil import copyfile, rmtree
 import sys
-import time
+from time import time
 
 
 def get_file_list(path):
     return os.listdir(path)
 
 
-def file_process(file_list):
+def select_file_folder(select_type, selcet_path):
+    file_folder_list = (os.listdir(selcet_path))
+    if cur_file_name in file_folder_list:
+        file_folder_list.remove(cur_file_name)
+    folder_list = []
+    file_list = []
+    for i in file_folder_list:
+        if "." in i:
+            file_list.append(i)
+        else:
+            folder_list.append(i)
+    if select_type == "file":
+        return file_list
+    else:
+        return folder_list
+
+
+def file_process(path):
     global file_num, folder_num
     file_num = 0
     folder_num = 0
     if choice == "1":
-        file_num = sort_by_extension(file_list)
+        file_num = sort_by_extension(path)
     elif choice == "2":
-        file_num = sort_by_filename(file_list)
+        file_num = sort_by_filename(path)
     elif choice == "3":
-        folder_num = dismiss_folder(file_list)
+        folder_num = dismiss_folder(path)
 
 
 def copy_file(source, target):
     try:
-        shutil.copyfile(source, target)
+        copyfile(source, target)
     except IOError as e:
         print("Unable to copy file. %s" % e)
         exit(1)
@@ -33,13 +50,14 @@ def del_old_file(file):
 
 
 def del_old_floder(folder):
-    shutil.rmtree(folder)
+    rmtree(folder)
 
 
 def init():
-    global choice, cur_path
-    print("***************FileMaster***************")
-    print("**https://github.com/BenjiaH/FileMaster**\n")
+    global cur_file_name, choice, cur_path
+    print("***********************FileMaster***********************")
+    print("********https://github.com/BenjiaH/FileMaster***********\n")
+    cur_file_name = os.path.basename(sys.argv[0])
     cur_path = os.getcwd()
     os.chdir(cur_path)
     flag_0 = 1
@@ -62,85 +80,62 @@ def init():
             flag_0 = 0
 
 
-def sort_by_extension(file_list):
+def sort_by_extension(path):
     count = 0
+    file_list = select_file_folder("file", path)
     for i in file_list:
         cur_file_extension = os.path.splitext(i)[-1]
-        if i == (os.path.basename(sys.argv[0])):
-            pass
-        elif cur_file_extension == "":
-            pass
-        else:
-            cur_file_extension = (cur_file_extension.replace(".", "")).upper()
-            if os.path.exists(cur_file_extension + "文件"):
-                copy_file(i, cur_file_extension + "文件\\" + i)
-                del_old_file(i)
-                count += 1
-                print("已整理", i)
-            else:
-                os.mkdir(cur_file_extension + "文件")
-                copy_file(i, cur_file_extension + "文件\\" + i)
-                del_old_file(i)
-                count += 1
-                print("已整理", i)
+        cur_file_extension = (cur_file_extension.replace(".", "")).upper()
+        if not os.path.exists(cur_file_extension + "文件"):
+            os.mkdir(cur_file_extension + "文件")
+        copy_file(i, cur_file_extension + "文件\\" + i)
+        del_old_file(i)
+        count += 1
+        print("已整理", i)
     return count
 
 
-def sort_by_filename(file_list):
+def sort_by_filename(path):
     count = 0
+    file_list = select_file_folder("file", path)
     for i in file_list:
-        cur_file_extension = os.path.splitext(i)[-1]
         cur_file_without_extension = os.path.splitext(i)[0]
-        if i == (os.path.basename(sys.argv[0])):
-            pass
-        # 文件夹
-        elif cur_file_extension == "":
-            pass
-        else:
-            if os.path.exists(cur_file_without_extension):
-                copy_file(i, cur_file_without_extension + "\\" + i)
-                del_old_file(i)
-                count += 1
-                print("已整理", i)
-            else:
-                os.mkdir(cur_file_without_extension)
-                copy_file(i, cur_file_without_extension + "\\" + i)
-                del_old_file(i)
-                count += 1
-                print("已整理", i)
+        if not os.path.exists(cur_file_without_extension):
+            os.mkdir(cur_file_without_extension)
+        copy_file(i, cur_file_without_extension + "\\" + i)
+        del_old_file(i)
+        count += 1
+        print("已整理", i)
     return count
 
 
-def dismiss_folder(file_list):
+def dismiss_folder(path):
     count = 0
-    for i in file_list:
-        # for i in range(1):
-        cur_file_extension = os.path.splitext(i)[-1]
-        # 文件夹
-        if cur_file_extension == "":
-            dismissed_folder = get_file_list(i)
-            for j in dismissed_folder:
-                copy_file(i + "\\" + j, j)
-                count += 1
-            del_old_floder(i)
+    folder_list = select_file_folder("folder", path)
+    for i in folder_list:
+        file_list = select_file_folder("file", path + "\\" + i)
+        for j in file_list:
+            copy_file(i + "\\" + j, j)
+            count += 1
+        del_old_floder(i)
+        print("已解散", i)
     return count
 
 
-def exit_program():
+def exit_program(cost_time):
     if file_num == 0 | folder_num == 0:
         input("\n\n未发现可以整理的文件。\n按任意键退出。")
     else:
-        input("\n\n所有文件（夹）整理（解散）完成，耗时{:.2f}秒。请刷新。\n按任意键退出。".format(end - start))
+        input("\n\n所有文件（夹）整理（解散）完成，耗时{:.2f}秒。请刷新。\n按任意键退出。".format(cost_time))
 
 
 def main():
     global end, start
     init()
-    start = time.time()
-    cur_file_list = get_file_list(cur_path)
-    file_process(cur_file_list)
-    end = time.time()
-    exit_program()
+    start = time()
+    file_process(cur_path)
+    end = time()
+    exit_program(end - start)
 
 
 if __name__ == '__main__':
