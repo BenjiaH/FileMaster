@@ -11,7 +11,7 @@ while True:
 
         break
     except Exception as e:
-        print("\033[31m{}0\033[0m".format(e))
+        print(e)
         os.system("pip install comtypes")
         input("请重新运行程序。按回车退出。")
         exit(1)
@@ -78,7 +78,7 @@ def init():
         cur_path = os.getcwd()
         print("当前工作目录：{}".format(cur_path))
         if cur_path.endswith(("Desktop", "desktop")):
-            print("\033[31m当前目录为桌面，如果需要切换目录请选择0\033[0m")
+            print("当前目录为桌面，如果需要切换目录请选择0")
         print("请选择:")
         print("1.按文件类型整理\t2.按文件名整理\t\t3.文件夹解散")
         print("4.Word=>PDF\t\t\t5.PPT=>PDF")
