@@ -8,7 +8,6 @@ from time import time
 while True:
     try:
         from comtypes.client import CreateObject
-
         break
     except Exception as e:
         print(e)
