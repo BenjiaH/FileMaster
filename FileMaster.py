@@ -4,7 +4,17 @@ import os
 from shutil import copyfile, rmtree
 import sys
 from time import time
-from comtypes.client import CreateObject
+
+while True:
+    try:
+        from comtypes.client import CreateObject
+
+        break
+    except Exception as e:
+        print("\033[31m{}0\033[0m".format(e))
+        os.system("pip install comtypes")
+        input("请重新运行程序。按回车退出。")
+        exit(1)
 
 
 def process_detection(process_name):
@@ -39,9 +49,9 @@ def file_process(path):
     elif choice == "3":
         process_num = dismiss_folder(path)
     elif choice == "4":
-        process_num = wordppt2pdf(choice, path)
+        process_num = word_ppt2pdf(choice, path)
     elif choice == "5":
-        process_num = wordppt2pdf(choice, path)
+        process_num = word_ppt2pdf(choice, path)
     return process_num
 
 
@@ -63,33 +73,33 @@ def del_old_floder(folder):
 
 def init():
     global cur_file_name, choice, cur_path
-    print("***********************FileMaster***********************")
-    print("********https://github.com/BenjiaH/FileMaster***********\n")
     cur_file_name = os.path.basename(sys.argv[0])
-    cur_path = os.getcwd()
-    os.chdir(cur_path)
-    flag_0 = 1
-    while flag_0:
+    while True:
+        cur_path = os.getcwd()
         print("当前工作目录：{}".format(cur_path))
+        if cur_path.endswith(("Desktop", "desktop")):
+            print("\033[31m当前目录为桌面，如果需要切换目录请选择0\033[0m")
         print("请选择:")
         print("1.按文件类型整理\t2.按文件名整理\t\t3.文件夹解散")
         print("4.Word=>PDF\t\t\t5.PPT=>PDF")
         print("0.更改当前目录\n")
-        choice = input()
-        if choice == "0":
-            cur_path = input("输入新的工作目录：\n")
-            flag_1 = 1
-            while flag_1:
-                try:
-                    os.chdir(cur_path)
-                    flag_1 = 0
-                    print()
-                except Exception as e:
-                    print(e)
-                    cur_path = input("输入有误请重新输入：\n")
-                continue
-        else:
-            flag_0 = 0
+        while True:
+            choice = input()
+            if choice == "0":
+                new_path = input("输入新的工作目录：\n")
+                while True:
+                    try:
+                        os.chdir(new_path)
+                        break
+                    except Exception as e:
+                        print(e)
+                        new_path = input("输入有误。请重新输入：\n")
+                    continue
+                break
+            elif choice in ("1", "2", "3", "4", "5"):
+                return
+            else:
+                print("输入有误。请重新输入：")
 
 
 def sort_by_extension(path):
@@ -134,9 +144,7 @@ def dismiss_folder(path):
     return count
 
 
-# 速度最快。可能会导致office进程无法完全关闭
-# 4.Word=>PDF 5.PPT=>PDF
-def wordppt2pdf(covert_choice, path):
+def word_ppt2pdf(covert_choice, path):
     global start
     count = 0
     file_list = select_file_folder("file", path)
@@ -167,10 +175,9 @@ def wordppt2pdf(covert_choice, path):
             while process_detection("POWERPNT.EXE"):
                 input("检测到PowerPoint已经打开，请保存当前文件并关闭程序。按回车键继续。")
                 os.system('TASKKILL /F /IM "POWERPNT.EXE"')
-            print("可能耗时较长，请耐心等待。建议先关闭PowerPoint的所有加载项。若出现卡死，请手动结束PowerPoint。")
+            print("可能耗时较长，请耐心等待。建议先关闭PowerPoint的所有加载项。\n若出现卡死，请手动结束PowerPoint。")
             input("按回车键开始转换{}".format(ppt_list))
             start = time()
-            # 是否需要两条指令？
             ppt = CreateObject("Powerpoint.Application")
             ppt.Visible = 1
             for i in ppt_list:
@@ -191,20 +198,26 @@ def exit_program(choice, process_num, cost_time):
         input("\n\n未发现可以处理的文件。\n按回车键退出。")
     else:
         if choice == "1" or choice == "2":
-            input("\n\n所有文件整理完成，耗时{:.2f}秒。请刷新。\n按回车键退出。".format(cost_time))
+            print("\n\n所有文件整理完成，", end="")
         elif choice == "3":
-            input("\n\n所有文件夹解散完成，耗时{:.2f}秒。请刷新。\n按回车键退出。".format(cost_time))
+            print("\n\n所有文件夹解散完成，", end="")
         elif choice == "4" or choice == "5":
-            input("\n\n所有文件转换为PDF完成，耗时{:.2f}秒。请刷新。\n按回车键退出。".format(cost_time))
+            print("\n\n所有文件转换为PDF完成，", end="")
+    input("耗时{:.2f}秒。请刷新。\n按回车键继续。若要结束程序请关闭此窗口。\n".format(cost_time))
 
 
 def main():
     global end, start
-    init()
-    start = time()
-    process_num = file_process(cur_path)
-    end = time()
-    exit_program(choice, process_num, end - start)
+    print("********************************************************")
+    print("***********************FileMaster***********************")
+    print("********https://github.com/BenjiaH/FileMaster***********")
+    print("********************************************************\n")
+    while True:
+        init()
+        start = time()
+        process_sum_num = file_process(cur_path)
+        end = time()
+        exit_program(choice, process_sum_num, end - start)
 
 
 if __name__ == '__main__':
