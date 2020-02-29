@@ -144,11 +144,10 @@ def wordppt2pdf(covert_choice, path):
         wd_list = [f for f in file_list if f.endswith((".doc", ".docx"))]
         if len(wd_list) > 0:
             while process_detection("WINWORD.EXE"):
-                input("检测到Word已经打开，请保存当前文件并关闭程序。按任意键继续。")
+                input("检测到Word已经打开，请保存当前文件并关闭程序。按回车键继续。")
                 os.system('TASKKILL /F /IM "WINWORD.EXE"')
-            input("按任意键开始转换{}".format(wd_list))
+            input("按回车键开始转换{}".format(wd_list))
             start = time()
-            # 是否需要两条指令？
             word = CreateObject("Word.Application")
             word.Visible = 0
             for i in wd_list:
@@ -166,10 +165,10 @@ def wordppt2pdf(covert_choice, path):
         ppt_list = [f for f in file_list if f.endswith((".ppt", ".pptx"))]
         if len(ppt_list) > 0:
             while process_detection("POWERPNT.EXE"):
-                input("检测到PowerPoint已经打开，请保存当前文件并关闭程序。按任意键继续。")
+                input("检测到PowerPoint已经打开，请保存当前文件并关闭程序。按回车键继续。")
                 os.system('TASKKILL /F /IM "POWERPNT.EXE"')
             print("可能耗时较长，请耐心等待。建议先关闭PowerPoint的所有加载项。若出现卡死，请手动结束PowerPoint。")
-            input("按任意键开始转换{}".format(ppt_list))
+            input("按回车键开始转换{}".format(ppt_list))
             start = time()
             # 是否需要两条指令？
             ppt = CreateObject("Powerpoint.Application")
@@ -189,14 +188,14 @@ def wordppt2pdf(covert_choice, path):
 
 def exit_program(choice, process_num, cost_time):
     if process_num == 0:
-        input("\n\n未发现可以处理的文件。\n按任意键退出。")
+        input("\n\n未发现可以处理的文件。\n按回车键退出。")
     else:
         if choice == "1" or choice == "2":
-            input("\n\n所有文件整理完成，耗时{:.2f}秒。请刷新。\n按任意键退出。".format(cost_time))
+            input("\n\n所有文件整理完成，耗时{:.2f}秒。请刷新。\n按回车键退出。".format(cost_time))
         elif choice == "3":
-            input("\n\n所有文件夹解散完成，耗时{:.2f}秒。请刷新。\n按任意键退出。".format(cost_time))
+            input("\n\n所有文件夹解散完成，耗时{:.2f}秒。请刷新。\n按回车键退出。".format(cost_time))
         elif choice == "4" or choice == "5":
-            input("\n\n所有文件转换为PDF完成，耗时{:.2f}秒。请刷新。\n按任意键退出。".format(cost_time))
+            input("\n\n所有文件转换为PDF完成，耗时{:.2f}秒。请刷新。\n按回车键退出。".format(cost_time))
 
 
 def main():
