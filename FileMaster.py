@@ -8,6 +8,7 @@ from time import time
 while True:
     try:
         from comtypes.client import CreateObject
+
         break
     except Exception as e:
         print(e)
@@ -68,6 +69,11 @@ def del_old_file(file):
 
 def del_old_floder(folder):
     rmtree(folder)
+
+
+def print_list(list):
+    for var in list:
+        print(var)
 
 
 def init():
@@ -153,7 +159,9 @@ def word_ppt2pdf(covert_choice, path):
             while process_detection("WINWORD.EXE"):
                 input("检测到Word已经打开，请保存当前文件并关闭程序。按回车键继续。")
                 os.system('TASKKILL /F /IM "WINWORD.EXE"')
-            input("按回车键开始转换{}".format(wd_list))
+            print("按回车键开始转换")
+            print_list(wd_list)
+            input()
             start = time()
             word = CreateObject("Word.Application")
             word.Visible = 0
@@ -175,7 +183,9 @@ def word_ppt2pdf(covert_choice, path):
                 input("检测到PowerPoint已经打开，请保存当前文件并关闭程序。按回车键继续。")
                 os.system('TASKKILL /F /IM "POWERPNT.EXE"')
             print("可能耗时较长，请耐心等待。建议先关闭PowerPoint的所有加载项。\n若出现卡死，请手动结束PowerPoint。")
-            input("按回车键开始转换{}".format(ppt_list))
+            print("按回车键开始转换")
+            print_list(ppt_list)
+            input()
             start = time()
             ppt = CreateObject("Powerpoint.Application")
             ppt.Visible = 1
