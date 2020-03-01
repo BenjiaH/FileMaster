@@ -204,7 +204,8 @@ def word_ppt2pdf(covert_choice, path):
 
 def exit_program(choice, process_num, cost_time):
     if process_num == 0:
-        input("\n\n未发现可以处理的文件。\n按回车键退出。")
+        input("\n\n未发现可以处理的文件。\n按回车键继续。")
+        return
     else:
         if choice == "1" or choice == "2":
             print("\n\n所有文件整理完成，", end="")
