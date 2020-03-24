@@ -4,9 +4,11 @@ import os
 from shutil import copyfile, rmtree
 import sys
 from time import time
+
 while True:
     try:
         from comtypes.client import CreateObject
+
         break
     except Exception as e:
         print(e)
@@ -16,25 +18,30 @@ while True:
 
 
 def process_detection(process_name):
-    process = len(os.popen('tasklist | findstr ' + process_name).readlines())
+    process = len(os.popen("tasklist | findstr " + process_name).readlines())
     return process
 
 
-def select_file_folder(select_type, selcet_path):
-    file_folder_list = (os.listdir(selcet_path))
+def get_folder_list(path):
+    file_folder_list = (os.listdir(path))
     if cur_file_name in file_folder_list:
         file_folder_list.remove(cur_file_name)
     folder_list = []
+    for i in file_folder_list:
+        if os.path.isdir(path + "\\" + i):
+            folder_list.append(i)
+    return folder_list
+
+
+def get_file_list(path):
+    file_folder_list = (os.listdir(path))
+    if cur_file_name in file_folder_list:
+        file_folder_list.remove(cur_file_name)
     file_list = []
     for i in file_folder_list:
-        if "." in i:
+        if os.path.isfile(path + "\\" + i):
             file_list.append(i)
-        else:
-            folder_list.append(i)
-    if select_type == "file":
-        return file_list
-    else:
-        return folder_list
+    return file_list
 
 
 def file_process(path):
@@ -47,9 +54,9 @@ def file_process(path):
     elif choice == "3":
         process_num = dismiss_folder(path)
     elif choice == "4":
-        process_num = word_ppt2pdf(choice, path)
+        process_num = word2pdf(path)
     elif choice == "5":
-        process_num = word_ppt2pdf(choice, path)
+        process_num = ppt2pdf(path)
     return process_num
 
 
@@ -107,7 +114,7 @@ def init():
 
 def sort_by_extension(path):
     count = 0
-    file_list = select_file_folder("file", path)
+    file_list = get_file_list(path)
     for i in file_list:
         cur_file_extension = os.path.splitext(i)[-1]
         cur_file_extension = (cur_file_extension.replace(".", "")).upper()
@@ -122,7 +129,7 @@ def sort_by_extension(path):
 
 def sort_by_filename(path):
     count = 0
-    file_list = select_file_folder("file", path)
+    file_list = get_file_list(path)
     for i in file_list:
         cur_file_without_extension = os.path.splitext(i)[0]
         if not os.path.exists(cur_file_without_extension):
@@ -136,9 +143,9 @@ def sort_by_filename(path):
 
 def dismiss_folder(path):
     count = 0
-    folder_list = select_file_folder("folder", path)
+    folder_list = get_folder_list(path)
     for i in folder_list:
-        file_list = select_file_folder("file", path + "\\" + i)
+        file_list = get_file_list(path + "\\" + i)
         for j in file_list:
             copy_file(i + "\\" + j, j)
             count += 1
@@ -147,57 +154,61 @@ def dismiss_folder(path):
     return count
 
 
-def word_ppt2pdf(covert_choice, path):
+def word2pdf(path):
     global start
     count = 0
-    file_list = select_file_folder("file", path)
-    if covert_choice == "4":
-        wd_list = [f for f in file_list if f.endswith((".doc", ".docx"))]
-        if len(wd_list) > 0:
-            while process_detection("WINWORD.EXE"):
-                input("检测到Word已经打开，请保存当前文件并关闭程序。按回车键继续。")
-                os.system('TASKKILL /F /IM "WINWORD.EXE"')
-            print("按回车键开始转换")
-            print_list(wd_list)
-            input()
-            start = time()
-            word = CreateObject("Word.Application")
-            word.Visible = 0
-            for i in wd_list:
-                print("正在转换{}为PDF文件".format(i))
-                new_pdf = word.Documents.Open(cur_path + "\\" + i)
-                new_pdf.SaveAs(cur_path + "\\" + os.path.splitext(i)[0] + ".pdf", FileFormat=17)
-                new_pdf.Close()
-                count += 1
-                print("已转换{}为PDF文件".format(i))
+    file_list = get_file_list(path)
+    wd_list = [f for f in file_list if f.endswith((".doc", ".docx"))]
+    if len(wd_list) > 0:
+        while process_detection("WINWORD.EXE"):
+            input("检测到Word已经打开，请保存当前文件并关闭程序。按回车键继续。")
             os.system('TASKKILL /F /IM "WINWORD.EXE"')
-            return count
-        else:
-            return count
-    elif covert_choice == "5":
-        ppt_list = [f for f in file_list if f.endswith((".ppt", ".pptx"))]
-        if len(ppt_list) > 0:
-            while process_detection("POWERPNT.EXE"):
-                input("检测到PowerPoint已经打开，请保存当前文件并关闭程序。按回车键继续。")
-                os.system('TASKKILL /F /IM "POWERPNT.EXE"')
-            print("可能耗时较长，请耐心等待。建议先关闭PowerPoint的所有加载项。\n若出现卡死，请手动结束PowerPoint。")
-            print("按回车键开始转换")
-            print_list(ppt_list)
-            input()
-            start = time()
-            ppt = CreateObject("Powerpoint.Application")
-            ppt.Visible = 1
-            for i in ppt_list:
-                print("正在转换{}为PDF文件".format(i))
-                new_pdf = ppt.Presentations.Open(cur_path + "\\" + i)
-                new_pdf.SaveAs(cur_path + "\\" + os.path.splitext(i)[0] + ".pdf", FileFormat=32)
-                new_pdf.Close()
-                count += 1
-                print("已转换{}为PDF文件".format(i))
+        print("按回车键开始转换")
+        print_list(wd_list)
+        input()
+        start = time()
+        word = CreateObject("Word.Application")
+        word.Visible = 0
+        for i in wd_list:
+            print("正在转换{}为PDF文件".format(i))
+            new_pdf = word.Documents.Open(cur_path + "\\" + i)
+            new_pdf.SaveAs(cur_path + "\\" + os.path.splitext(i)[0] + ".pdf", FileFormat=17)
+            new_pdf.Close()
+            count += 1
+            print("已转换{}为PDF文件".format(i))
+        os.system('TASKKILL /F /IM "WINWORD.EXE"')
+        return count
+    else:
+        return count
+
+
+def ppt2pdf(path):
+    global start
+    count = 0
+    file_list = get_file_list(path)
+    ppt_list = [f for f in file_list if f.endswith((".ppt", ".pptx"))]
+    if len(ppt_list) > 0:
+        while process_detection("POWERPNT.EXE"):
+            input("检测到PowerPoint已经打开，请保存当前文件并关闭程序。按回车键继续。")
             os.system('TASKKILL /F /IM "POWERPNT.EXE"')
-            return count
-        else:
-            return count
+        print("可能耗时较长，请耐心等待。建议先关闭PowerPoint的所有加载项。\n若出现卡死，请手动结束PowerPoint。")
+        print("按回车键开始转换")
+        print_list(ppt_list)
+        input()
+        start = time()
+        ppt = CreateObject("Powerpoint.Application")
+        ppt.Visible = 1
+        for i in ppt_list:
+            print("正在转换{}为PDF文件".format(i))
+            new_pdf = ppt.Presentations.Open(cur_path + "\\" + i)
+            new_pdf.SaveAs(cur_path + "\\" + os.path.splitext(i)[0] + ".pdf", FileFormat=32)
+            new_pdf.Close()
+            count += 1
+            print("已转换{}为PDF文件".format(i))
+        os.system('TASKKILL /F /IM "POWERPNT.EXE"')
+        return count
+    else:
+        return count
 
 
 def exit_program(choice, process_num, cost_time):

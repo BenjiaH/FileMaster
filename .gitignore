@@ -1,6 +1,6 @@
 build.bat
 icon/
-test_folder/
+test/
 *.__pycache__
 *.build
 *.testfolder
