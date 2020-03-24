@@ -1,5 +1,5 @@
 <h1 align="center">FileMaster</h1>
-<h3 align="center">BenjiaH</h3>
+<h4 align="center">BenjiaH</h4>
 
 ## Features
 - 将当前目录文件按文件类型分类
@@ -17,4 +17,5 @@
 - [ ] 批量修改文件名，对重复的文件名字段进行修改
 
 ## License
-[MIT License](https://github.com/BenjiaH/FileMaster/blob/master/LICENSE)
+[The MIT License](https://github.com/BenjiaH/FileMaster/blob/master/LICENSE)
+
