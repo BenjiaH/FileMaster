@@ -44,6 +44,13 @@ def get_file_list(path):
     return file_list
 
 
+def get_file_folder_list(path):
+    file_folder_list = (os.listdir(path))
+    if cur_file_name in file_folder_list:
+        file_folder_list.remove(cur_file_name)
+    return file_folder_list
+
+
 def file_process(path):
     global process_num
     process_num = 0
@@ -72,6 +79,8 @@ def del_old_file(file):
     os.remove(file)
 
 
+# NOT SAFE
+# TODO move files to the recycle bin
 def del_old_floder(folder):
     rmtree(folder)
 
@@ -95,7 +104,11 @@ def init():
         print("0.更改当前目录\n")
         while True:
             choice = input()
-            if choice == "0":
+            if choice in ("1", "2", "3", "4", "5"):
+                return
+            elif choice not in ("1", "2", "3", "4", "5", "0"):
+                print("输入有误。请重新输入：")
+            elif choice == "0":
                 new_path = input("输入新的工作目录：\n")
                 while True:
                     try:
@@ -106,10 +119,6 @@ def init():
                         new_path = input("输入有误。请重新输入：\n")
                     continue
                 break
-            elif choice in ("1", "2", "3", "4", "5"):
-                return
-            else:
-                print("输入有误。请重新输入：")
 
 
 def sort_by_extension(path):
@@ -145,8 +154,8 @@ def dismiss_folder(path):
     count = 0
     folder_list = get_folder_list(path)
     for i in folder_list:
-        file_list = get_file_list(path + "\\" + i)
-        for j in file_list:
+        file_folder_list = get_file_folder_list(path + "\\" + i)
+        for j in file_folder_list:
             copy_file(i + "\\" + j, j)
             count += 1
         del_old_floder(i)
@@ -159,7 +168,9 @@ def word2pdf(path):
     count = 0
     file_list = get_file_list(path)
     wd_list = [f for f in file_list if f.endswith((".doc", ".docx"))]
-    if len(wd_list) > 0:
+    if len(wd_list) <= 0:
+        return count
+    elif len(wd_list) > 0:
         while process_detection("WINWORD.EXE"):
             input("检测到Word已经打开，请保存当前文件并关闭程序。按回车键继续。")
             os.system('TASKKILL /F /IM "WINWORD.EXE"')
@@ -178,8 +189,6 @@ def word2pdf(path):
             print("已转换{}为PDF文件".format(i))
         os.system('TASKKILL /F /IM "WINWORD.EXE"')
         return count
-    else:
-        return count
 
 
 def ppt2pdf(path):
@@ -187,7 +196,9 @@ def ppt2pdf(path):
     count = 0
     file_list = get_file_list(path)
     ppt_list = [f for f in file_list if f.endswith((".ppt", ".pptx"))]
-    if len(ppt_list) > 0:
+    if len(ppt_list) <= 0:
+        return count
+    elif len(ppt_list) > 0:
         while process_detection("POWERPNT.EXE"):
             input("检测到PowerPoint已经打开，请保存当前文件并关闭程序。按回车键继续。")
             os.system('TASKKILL /F /IM "POWERPNT.EXE"')
@@ -207,8 +218,6 @@ def ppt2pdf(path):
             print("已转换{}为PDF文件".format(i))
         os.system('TASKKILL /F /IM "POWERPNT.EXE"')
         return count
-    else:
-        return count
 
 
 def exit_program(choice, process_num, cost_time):
@@ -216,7 +225,7 @@ def exit_program(choice, process_num, cost_time):
     if process_num == 0:
         input("未发现可以处理的文件。\n按回车键继续。")
         return
-    else:
+    elif process_num > 0:
         if choice == "1" or choice == "2":
             print("所有文件整理完成，", end="")
         elif choice == "3":
