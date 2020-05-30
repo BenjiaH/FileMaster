@@ -14,7 +14,7 @@
 - [X] ~~切换工作目录~~
 - [X] ~~Word文档批量转换为PDF文件~~
 - [X] ~~Power Point文档批量转换为PDF文件~~
-- [ ] 批量修改文件名，对重复的文件名字段进行修改
+- [ ] 计算文件MD5,SHA1
 
 ## License
 [The MIT License](https://github.com/BenjiaH/FileMaster/blob/master/LICENSE)
