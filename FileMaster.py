@@ -5,6 +5,7 @@ from shutil import copyfile, rmtree
 import sys
 from time import time
 import hashlib
+from comtypes.client import CreateObject
 
 
 def main():
