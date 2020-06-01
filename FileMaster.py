@@ -120,7 +120,7 @@ def sort_by_extension(path):
         copy_file(i, cur_file_extension + "文件\\" + i)
         del_old_file(i)
         count += 1
-        print("已整理", i)
+        print("已整理[{}]".format(i))
     return count
 
 
@@ -134,7 +134,7 @@ def sort_by_filename(path):
         copy_file(i, cur_file_without_extension + "\\" + i)
         del_old_file(i)
         count += 1
-        print("已整理", i)
+        print("已整理[{}]".format(i))
     return count
 
 
@@ -147,7 +147,7 @@ def dismiss_folder(path):
             copy_file(i + "\\" + j, j)
             count += 1
         del_old_floder(i)
-        print("已解散", i)
+        print("已解散[{}]文件夹".format(i))
     return count
 
 
@@ -169,13 +169,13 @@ def word2pdf(path):
         word = CreateObject("Word.Application")
         word.Visible = 0
         for i in wd_list:
-            print("正在转换{}为PDF文件".format(i))
+            print("正在转换[{}]为PDF文件".format(i))
             new_pdf = word.Documents.Open(cur_working_path + "\\" + i)
             new_pdf.SaveAs(cur_working_path + "\\" + os.path.splitext(i)
                            [0] + ".pdf", FileFormat=17)
             new_pdf.Close()
             count += 1
-            print("已转换{}为PDF文件".format(i))
+            print("已转换[{}]为PDF文件\n".format(i))
         os.system('TASKKILL /F /IM "WINWORD.EXE"')
         return count
 
@@ -199,13 +199,13 @@ def ppt2pdf(path):
         ppt = CreateObject("Powerpoint.Application")
         ppt.Visible = 1
         for i in ppt_list:
-            print("正在转换{}为PDF文件".format(i))
+            print("正在转换[{}]为PDF文件".format(i))
             new_pdf = ppt.Presentations.Open(cur_working_path + "\\" + i)
             new_pdf.SaveAs(cur_working_path + "\\" + os.path.splitext(i)
                            [0] + ".pdf", FileFormat=32)
             new_pdf.Close()
             count += 1
-            print("已转换{}为PDF文件".format(i))
+            print("已转换[{}]为PDF文件\n".format(i))
         os.system('TASKKILL /F /IM "POWERPNT.EXE"')
         return count
 
@@ -219,7 +219,7 @@ def get_SHA1(path):
         with open(cur_working_path + "\\" + i, 'rb') as f:
             sha1.update(f.read())
         print("{:10} {}".format("Filename:", i))
-        print("{:10} {}\n".format("SHA1:", sha1.hexdigest()))
+        print("{:10} {}\n".format("SHA1:", sha1.hexdigest().upper()))
         count += 1
     return count
 
@@ -233,7 +233,7 @@ def get_MD5(path):
         with open(cur_working_path + "\\" + i, 'rb') as f:
             md5.update(f.read())
         print('{:10} {}'.format("Filename:", i))
-        print('{:10} {}\n'.format("MD5:", md5.hexdigest()))
+        print('{:10} {}\n'.format("MD5:", md5.hexdigest().upper()))
         count += 1
     return count
 
