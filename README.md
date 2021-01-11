@@ -21,5 +21,5 @@
 - [X] ~~计算文件MD5,SHA1~~
 
 ## License
-[The MIT License](https://github.com/BenjiaH/FileMaster/blob/master/LICENSE)
+[The MIT License](LICENSE)
 
