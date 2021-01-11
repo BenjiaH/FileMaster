@@ -7,12 +7,18 @@ from time import time
 import hashlib
 from comtypes.client import CreateObject
 
+def CH_len(string):
+    return 16-len(string.encode('GBK'))+len(string)
+
+# var
+FEAT_LIST = ["1.按文件类型整理", "2.按文件名整理", "3.文件夹解散", "4.Word=>PDF", "5.PPT=>PDF", "6.计算MD5", "7.计算SHA1"]
+FEAT_LEN = [CH_len(feat_str) for feat_str in FEAT_LIST]
 
 def main():
     global end, start
     print("********************************************************")
     print("***********************FileMaster***********************")
-    print("********https://github.com/BenjiaH/FileMaster***********")
+    print("******* https://github.com/BenjiaH/FileMaster **********")
     print("********************************************************\n")
     while True:
         init()
@@ -34,12 +40,9 @@ def init():
         if cur_working_path.endswith(("Desktop", "desktop")):
             print("当前目录为桌面，如果需要切换目录请选择0")
         print("请选择:")
-        print("{name0:<{len0}}\t{name1:<{len1}}\t{name2:<{len2}}".format(name0="1.按文件类型整理", len0=get_print_len(
-            "1.按文件类型整理"), name1="2.按文件名整理", len1=get_print_len("2.按文件名整理"), name2="3.文件夹解散", len2=get_print_len("3.文件夹解散")))
-        print("{name0:<{len0}}\t{name1:<{len1}}".format(name0="4.Word=>PDF", len0=get_print_len(
-            "4.Word=>PDF"), name1="5.PPT=>PDF", len1=get_print_len("5.PPT=>PDF")))
-        print("{name0:<{len0}}\t{name1:<{len1}}".format(name0="6.计算MD5", len0=get_print_len(
-            "6.计算MD5"), name1="7.计算SHA1", len1=get_print_len("7.计算SHA1")))
+        print("{name0:<{len0}}\t{name1:<{len1}}\t{name2:<{len2}}".format(name0=FEAT_LIST[0], len0=FEAT_LEN[0], name1=FEAT_LIST[1], len1=FEAT_LEN[1], name2=FEAT_LIST[2], len2=FEAT_LEN[2]))
+        print("{name3:<{len3}}\t{name4:<{len4}}".format(name3=FEAT_LIST[3], len3=FEAT_LEN[3], name4=FEAT_LIST[4], len4=FEAT_LEN[4]))
+        print("{name5:<{len5}}\t{name6:<{len6}}".format(name5=FEAT_LIST[5], len5=FEAT_LEN[5], name6=FEAT_LIST[6], len6=FEAT_LEN[6]))
         print("0.更改当前目录\n")
         while True:
             choice = input()
@@ -281,10 +284,6 @@ def print_list(list):
 def process_detection(process_name):
     process = len(os.popen("tasklist | findstr " + process_name).readlines())
     return process
-
-
-def get_print_len(string):
-    return 16-len(string.encode('GBK'))+len(string)
 
 
 if __name__ == '__main__':
