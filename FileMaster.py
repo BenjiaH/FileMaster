@@ -165,6 +165,7 @@ def word2pdf(path):
         print("按回车键开始转换")
         print_list(wd_list)
         input()
+        print("转换中...")
         start = time()
         word = CreateObject("Word.Application")
         word.Visible = 0
@@ -195,6 +196,7 @@ def ppt2pdf(path):
         print("按回车键开始转换")
         print_list(ppt_list)
         input()
+        print("转换中...")
         start = time()
         ppt = CreateObject("Powerpoint.Application")
         ppt.Visible = 1
